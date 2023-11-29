@@ -7,17 +7,20 @@ use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Spatie\Permission\Models\Role;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $navigationGroup = 'User Management';
 
@@ -27,18 +30,34 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Section::make()
+                ->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('email')
+                        ->email()
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('password')
+                        ->password()
+                        ->confirmed()
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('password_confirmation')
+                        ->password()
+                        ->required()
+                        ->maxLength(255),
+                ])->columns(2),
+                Forms\Components\Section::make()
+                ->schema([
+                    Forms\Components\Select::make('roles')
+                        ->relationship('roles', 'name')
+                        // ->options(fn (Get $get): Collection => Role::query()->whereNot(function ($query) {$query->where('name','super_admin')->orWhere('id',1);})->pluck('name', 'id'))
+                        ->multiple()
+                        ->preload()
+                        ->searchable()
+                ])
             ]);
     }
 
@@ -81,6 +100,18 @@ class UserResource extends Resource
             //
         ];
     }
+
+    // public static function getPermissionPrefixes(): array
+    // {
+    //     return [
+    //         'view',
+    //         'view_any',
+    //         'create',
+    //         'update',
+    //         'delete',
+    //         'delete_any',
+    //     ];
+    // }
 
     public static function getPages(): array
     {
