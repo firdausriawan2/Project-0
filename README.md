@@ -8,7 +8,7 @@ Ini adalah aplikasi panel admin yang sat...set..sat..set biar ga keteteran kalau
 
 ## Features & Screenshots
 
-- Membawa semua fitur yang ada pada Filament seperti Panel Builder, Table Builder, Form Builder, etc.
+- Basic fitur Filament seperti Panel Builder, Table Builder, Form Builder, etc.
 - User Management include Role & Permissions
 - Etc.
 
